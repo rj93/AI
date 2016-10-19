@@ -28,7 +28,7 @@ public class GameDisplay {
     BufferedImage bufferImage;
     BufferedImage screenImage;   
     
-    public GameDisplay(GameState2P state){        
+    public GameDisplay(GameState2P state){
         width = state.getWidth() * cellSize;
         height = state.getHeight() * cellSize;   
         nrRows = state.getHeight();        
@@ -58,6 +58,10 @@ public class GameDisplay {
         frame.pack();
         frame.requestFocusInWindow();
         frame.setVisible(true); 
+    }
+    
+    public void dispose(){
+    	frame.dispose();
     }
     
     public void updateState(GameState2P newState){        
