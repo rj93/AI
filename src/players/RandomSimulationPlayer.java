@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Random;
 
 import moves.Move;
-import quoridor.GameDisplay;
 import quoridor.GameState2P;
 import quoridor.Quoridor;
 
@@ -57,20 +56,8 @@ public class RandomSimulationPlayer extends QuoridorPlayer {
 	private boolean playRandomGame(GameState2P s, long timeup, int playerIndex){
 		
 		if (s.isGameOver()){
-			if (s.isWinner(index)){
-//				GameDisplay testDisplay = new GameDisplay(s);
-//				try {
-//					Thread.sleep(5000);
-//				} catch (InterruptedException e) {
-//					e.printStackTrace();
-//				}
-//				testDisplay.dispose();
-			}
 			return s.isWinner(index);
 		} else if (System.currentTimeMillis() < timeup){
-			if (s.isGameOver()){
-				System.out.println("game is over but in else");
-			}
 			List<Move> legalMoves = GameState2P.getLegalMoves(s, playerIndex);
 			Move move = legalMoves.get(random.nextInt(legalMoves.size()));
         	GameState2P next = move.doMove(s);

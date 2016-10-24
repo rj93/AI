@@ -23,7 +23,8 @@ public class Quoridor {
         display = new GameDisplay(state);
         players = new QuoridorPlayer[2];
 //        players[0] = new HumanPlayer(state, 0, this); // RED
-        players[0] = new RandomSimulationPlayer(state, 0, this); // RED
+//        players[0] = new RandomSimulationPlayer(state, 0, this); // RED
+        players[0] = new HeuristicSimulationPlayer(state, 0, this); // RED
         players[1] = new AlphaBetaPlayerIterative(state, 1, this); // GREEN
 
         for (int i = 0; i < 2; i++) {
@@ -96,7 +97,7 @@ public class Quoridor {
 	    	wins[winner]++;
 	    	quoridor.close();
     	}
-    	System.out.println("Player 0  wins = " + wins[0]);
+    	System.out.println("Player 0 wins = " + wins[0]);
     	System.out.println("Player 1 wins = " + wins[1]);
     }
 }
