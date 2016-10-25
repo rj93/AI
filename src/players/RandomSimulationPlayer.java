@@ -26,18 +26,14 @@ public class RandomSimulationPlayer extends QuoridorPlayer {
 		List<Move> legalMoves = GameState2P.getLegalMoves(state, index);
         long startTime = System.currentTimeMillis();
         long stopTime = startTime + availableTime;
-        try {
-	        while  (System.currentTimeMillis() < stopTime){
-	        	Move move = legalMoves.get(random.nextInt(legalMoves.size()));
-	        	GameState2P next = move.doMove(state);
-	        	
-	        	int wins = playedMoves.containsKey(next) ? playedMoves.get(next) : 0;
-	        	if (playRandomGame(next, stopTime, indexOpponent))
-	        		wins++;
-	        	playedMoves.put(next, wins);
-	        }
-        } catch (Exception e){
-        	System.err.println(e.getMessage());
+        while  (System.currentTimeMillis() < stopTime){
+        	Move move = legalMoves.get(random.nextInt(legalMoves.size()));
+        	GameState2P next = move.doMove(state);
+        	
+        	int wins = playedMoves.containsKey(next) ? playedMoves.get(next) : 0;
+        	if (playRandomGame(next, stopTime, indexOpponent))
+        		wins++;
+        	playedMoves.put(next, wins);
         }
 		
 		int max = -1;
