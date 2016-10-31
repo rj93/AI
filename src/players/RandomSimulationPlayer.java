@@ -1,5 +1,6 @@
 package players;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,29 +23,40 @@ public class RandomSimulationPlayer extends QuoridorPlayer {
 
 	@Override
 	public void doMove() {
-		Map<GameState2P, Integer> playedMoves = new HashMap<GameState2P, Integer>(); 
+		Map<GameState2P, List<Integer>> playedMoves = new HashMap<GameState2P, List<Integer>>();
+		
 		List<Move> legalMoves = GameState2P.getLegalMoves(state, index);
         long startTime = System.currentTimeMillis();
         long stopTime = startTime + availableTime;
+        int totalSims = 0;
         while  (System.currentTimeMillis() < stopTime){
+        	totalSims++;
         	Move move = legalMoves.get(random.nextInt(legalMoves.size()));
         	GameState2P next = move.doMove(state);
         	
-        	int wins = playedMoves.containsKey(next) ? playedMoves.get(next) : 0;
-        	if (playRandomGame(next, stopTime, indexOpponent))
-        		wins++;
-        	playedMoves.put(next, wins);
+        	int n = 1;
+        	int w = (playRandomGame(next, stopTime, index)) ? 1 : 0;
+        	if (playedMoves.containsKey(next)){
+    			n = playedMoves.get(next).get(0) + 1;
+    			w = playedMoves.get(next).get(1) + w;
+    		}
+        	
+        	playedMoves.put(next, Arrays.asList(n, w));
         }
 		
-		int max = -1;
+        double percentage = 0.0;
 		GameState2P state = null;
-		for (Map.Entry<GameState2P, Integer> entry : playedMoves.entrySet()){
-			if (max < entry.getValue()){
-				max = entry.getValue();
+		for (Map.Entry<GameState2P, List<Integer>> entry : playedMoves.entrySet()){
+			int plays = entry.getValue().get(0);
+			int wins = entry.getValue().get(1);
+			double tempPercentage = (wins / (double) totalSims) * 100;
+			System.out.println(tempPercentage);
+			if (percentage < tempPercentage){
+				percentage = tempPercentage;
 				state = entry.getKey();
 			}
 		}
-		System.out.println("max wins " + max);
+		System.out.println("height percentage = " + percentage);
 		
 		game.doMove(index, state);
 	}

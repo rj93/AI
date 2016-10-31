@@ -14,7 +14,7 @@ public class AlphaBetaPlayerFixed extends QuoridorPlayer {
 
     public static Random random = new Random();
     protected int indexOpponent;
-    private int maxDepth = 2;
+    protected int maxDepth = 2;
 
     public AlphaBetaPlayerFixed(GameState2P state, int index, Quoridor game) {
         super(state, index, game);
@@ -36,12 +36,13 @@ public class AlphaBetaPlayerFixed extends QuoridorPlayer {
     }
     
     public Move chooseMove(int playerIndex, GameState2P state) {
+//    	System.out.println("chooseMove " + playerIndex);
         List<Move> legalMoves = GameState2P.getLegalMoves(state, playerIndex);
         Move bestMove = null;
         double bestScore = 0;
         for (Move m : legalMoves) {
             GameState2P next = m.doMove(state);
-            double score = getMinScoreAlphaBeta(next, maxDepth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+            double score = getMinScoreAlphaBeta(next, maxDepth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, (playerIndex+1)%2);
             if (bestMove == null || score > bestScore) {
                 bestMove = m;
                 bestScore = score;
@@ -58,6 +59,7 @@ public class AlphaBetaPlayerFixed extends QuoridorPlayer {
      * Consider all possible moves by our opponent
      */
     private double getMinScoreAlphaBeta(GameState2P s, int depth, double alpha, double beta, int playerIndex) {
+//    	System.out.println("getMinScoreAlphaBeta " + playerIndex);
         double res;
         if (depth == 0 || s.isGameOver()) {
             res = s.evaluateState(index);
@@ -67,7 +69,7 @@ public class AlphaBetaPlayerFixed extends QuoridorPlayer {
             res = Double.POSITIVE_INFINITY;
             for (Move move : opponentMoves) {
                 GameState2P next = move.doMove(s);
-                double score = getMaxScoreAlphaBeta(next, depth - 1, alpha, beta);
+                double score = getMaxScoreAlphaBeta(next, depth - 1, alpha, beta, (playerIndex+1)%2);
                 res = Math.min(res, score);
                 beta = Math.min(beta, score);
                 if (beta <= alpha) {
@@ -86,6 +88,7 @@ public class AlphaBetaPlayerFixed extends QuoridorPlayer {
      * Consider all possible moves we can play
      */
     private double getMaxScoreAlphaBeta(GameState2P s, int depth, double alpha, double beta, int playerIndex) {
+//    	System.out.println("getMaxScoreAlphaBeta " + playerIndex);
         double res;
         if (depth == 0 || s.isGameOver()) {
             res = s.evaluateState(index);
