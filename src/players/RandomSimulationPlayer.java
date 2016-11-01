@@ -12,7 +12,7 @@ import quoridor.Quoridor;
 
 public class RandomSimulationPlayer extends QuoridorPlayer {
 
-    public static Random random = new Random();
+//    public static Random random = new Random();
     private int indexOpponent;    
     private long availableTime=5000;
     
@@ -28,14 +28,13 @@ public class RandomSimulationPlayer extends QuoridorPlayer {
 		List<Move> legalMoves = GameState2P.getLegalMoves(state, index);
         long startTime = System.currentTimeMillis();
         long stopTime = startTime + availableTime;
-        int totalSims = 0;
+        
         while  (System.currentTimeMillis() < stopTime){
-        	totalSims++;
         	Move move = legalMoves.get(random.nextInt(legalMoves.size()));
         	GameState2P next = move.doMove(state);
         	
         	int n = 1;
-        	int w = (playRandomGame(next, stopTime, index)) ? 1 : 0;
+        	int w = (playGame(next, stopTime, (index+1)%2)) ? 1 : 0;
         	if (playedMoves.containsKey(next)){
     			n = playedMoves.get(next).get(0) + 1;
     			w = playedMoves.get(next).get(1) + w;
@@ -44,24 +43,11 @@ public class RandomSimulationPlayer extends QuoridorPlayer {
         	playedMoves.put(next, Arrays.asList(n, w));
         }
 		
-        double percentage = 0.0;
-		GameState2P state = null;
-		for (Map.Entry<GameState2P, List<Integer>> entry : playedMoves.entrySet()){
-			int plays = entry.getValue().get(0);
-			int wins = entry.getValue().get(1);
-			double tempPercentage = (wins / (double) totalSims) * 100;
-			System.out.println(tempPercentage);
-			if (percentage < tempPercentage){
-				percentage = tempPercentage;
-				state = entry.getKey();
-			}
-		}
-		System.out.println("height percentage = " + percentage);
-		
+        GameState2P state = getBestState(playedMoves);
 		game.doMove(index, state);
 	}
 	
-	private boolean playRandomGame(GameState2P s, long timeup, int playerIndex){
+	private boolean playGame(GameState2P s, long timeup, int playerIndex){
 		
 		if (s.isGameOver()){
 			return s.isWinner(index);
@@ -69,7 +55,7 @@ public class RandomSimulationPlayer extends QuoridorPlayer {
 			List<Move> legalMoves = GameState2P.getLegalMoves(s, playerIndex);
 			Move move = legalMoves.get(random.nextInt(legalMoves.size()));
         	GameState2P next = move.doMove(s);
-        	return playRandomGame(next, timeup, (playerIndex + 1) % 2);
+        	return playGame(next, timeup, (playerIndex + 1) % 2);
 		}
 
 		return false;

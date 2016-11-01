@@ -10,13 +10,13 @@ import moves.*;
  *
  * @author steven
  */
-public class AlphaBetaPlayerFixed extends QuoridorPlayer {
+public class AlphaBetaPlayerFixedRefactored extends QuoridorPlayer {
 
     public static Random random = new Random();
-    private int indexOpponent;
-    private int maxDepth = 2;
+    protected int indexOpponent;
+    protected int maxDepth = 2;
 
-    public AlphaBetaPlayerFixed(GameState2P state, int index, Quoridor game) {
+    public AlphaBetaPlayerFixedRefactored(GameState2P state, int index, Quoridor game) {
         super(state, index, game);
         indexOpponent = (index + 1) % 2;
     }
@@ -31,13 +31,18 @@ public class AlphaBetaPlayerFixed extends QuoridorPlayer {
         game.doMove(index, newState);
     }
     
-    public Move chooseMove() {
-        List<Move> legalMoves = GameState2P.getLegalMoves(state, index);
+    public Move chooseMove(){
+    	return chooseMove(index, state);
+    }
+    
+    public Move chooseMove(int playerIndex, GameState2P state) {
+//    	System.out.println("chooseMove " + playerIndex);
+        List<Move> legalMoves = GameState2P.getLegalMoves(state, playerIndex);
         Move bestMove = null;
         double bestScore = 0;
         for (Move m : legalMoves) {
             GameState2P next = m.doMove(state);
-            double score = getMinScoreAlphaBeta(next, maxDepth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+            double score = getMinScoreAlphaBeta(next, maxDepth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, (playerIndex+1)%2);
             if (bestMove == null || score > bestScore) {
                 bestMove = m;
                 bestScore = score;
@@ -45,21 +50,26 @@ public class AlphaBetaPlayerFixed extends QuoridorPlayer {
         }    
         return bestMove;
     }
+    
+    private double getMinScoreAlphaBeta(GameState2P s, int depth, double alpha, double beta){
+    	return getMinScoreAlphaBeta(s, depth, alpha, beta, indexOpponent);
+    }
 
     /*
      * Consider all possible moves by our opponent
      */
-    private double getMinScoreAlphaBeta(GameState2P s, int depth, double alpha, double beta) {
+    private double getMinScoreAlphaBeta(GameState2P s, int depth, double alpha, double beta, int playerIndex) {
+//    	System.out.println("getMinScoreAlphaBeta " + playerIndex);
         double res;
         if (depth == 0 || s.isGameOver()) {
             res = s.evaluateState(index);
         }
         else {
-            List<Move> opponentMoves = GameState2P.getLegalMoves(s, indexOpponent);
+            List<Move> opponentMoves = GameState2P.getLegalMoves(s, playerIndex);
             res = Double.POSITIVE_INFINITY;
             for (Move move : opponentMoves) {
                 GameState2P next = move.doMove(s);
-                double score = getMaxScoreAlphaBeta(next, depth - 1, alpha, beta);
+                double score = getMaxScoreAlphaBeta(next, depth - 1, alpha, beta, (playerIndex+1)%2);
                 res = Math.min(res, score);
                 beta = Math.min(beta, score);
                 if (beta <= alpha) {
@@ -69,21 +79,26 @@ public class AlphaBetaPlayerFixed extends QuoridorPlayer {
         }
         return res;
     }
+    
+    private double getMaxScoreAlphaBeta(GameState2P s, int depth, double alpha, double beta){
+    	return getMaxScoreAlphaBeta(s, depth, alpha, beta, index);
+    }
 
     /*
      * Consider all possible moves we can play
      */
-    private double getMaxScoreAlphaBeta(GameState2P s, int depth, double alpha, double beta) {
+    private double getMaxScoreAlphaBeta(GameState2P s, int depth, double alpha, double beta, int playerIndex) {
+//    	System.out.println("getMaxScoreAlphaBeta " + playerIndex);
         double res;
         if (depth == 0 || s.isGameOver()) {
             res = s.evaluateState(index);
         }
         else {
-            List<Move> myMoves = GameState2P.getLegalMoves(s, index);
+            List<Move> myMoves = GameState2P.getLegalMoves(s, playerIndex);
             res = Double.NEGATIVE_INFINITY;
             for (Move move : myMoves) {                
                 GameState2P next = move.doMove(s);
-                double score = getMinScoreAlphaBeta(next, depth - 1, alpha, beta);
+                double score = getMinScoreAlphaBeta(next, depth - 1, alpha, beta, (playerIndex + 1) % 2);
                 res = Math.max(res, score);
                 alpha = Math.max(alpha, score);
                 if (beta <= alpha) {

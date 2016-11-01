@@ -24,7 +24,7 @@ public class Quoridor {
         players = new QuoridorPlayer[2];
 //        players[0] = new HumanPlayer(state, 0, this); // RED
 //        players[0] = new RandomSimulationPlayer(state, 0, this); // RED
-        players[0] = new HeuristicSimulationPlayer(state, 0, this); // RED
+        players[0] = new UCB1SimulationPlayer(state, 0, this); // RED
         players[1] = new AlphaBetaPlayerIterative(state, 1, this); // GREEN
 
         for (int i = 0; i < 2; i++) {

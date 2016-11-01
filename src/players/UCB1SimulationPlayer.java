@@ -10,11 +10,11 @@ import moves.Move;
 import quoridor.GameState2P;
 import quoridor.Quoridor;
 
-public class UCB1SimulationPlayer extends HeuristicSimulationPlayer {
+public class UCB1SimulationPlayer extends HeuristicSimulationPlayerRefactored {
 	
 	private long availableTime = 5000;
 //	private Map<GameState2P, List<Integer>> playedMoves = new HashMap<GameState2P, List<Integer>>(); 
-	private int totalSims = 0;
+//	private int totalSims = 0;
 	
 	public UCB1SimulationPlayer(GameState2P state, int index, Quoridor game) {
 		super(state, index, game);
@@ -22,12 +22,12 @@ public class UCB1SimulationPlayer extends HeuristicSimulationPlayer {
 
 	@Override
 	public void doMove() {
-		Map<GameState2P, List<Integer>> playedMoves = new HashMap<GameState2P, List<Integer>>(); 
-		totalSims = 0;
+		Map<GameState2P, List<Integer>> playedMoves = new HashMap<GameState2P, List<Integer>>();
 		long startTime = System.currentTimeMillis();
         long stopTime = startTime + availableTime;
         
         List<GameState2P> legalStates = new ArrayList<GameState2P>();
+        int totalSims = 0;
         while (System.currentTimeMillis() < stopTime){
         	totalSims++;
         	List<Move> legalMoves = GameState2P.getLegalMoves(state, index);
@@ -41,8 +41,6 @@ public class UCB1SimulationPlayer extends HeuristicSimulationPlayer {
         			// play this move
         			unplayedMove = true;
         			stateToPlay = s;
-//        			boolean win = playGame(s, stopTime, index);
-//        			playedMoves.put(s, Arrays.asList(1, (win) ? 1 : 0));
         		}
         	}
         	if (!unplayedMove){
@@ -52,21 +50,18 @@ public class UCB1SimulationPlayer extends HeuristicSimulationPlayer {
         		for (Map.Entry<GameState2P, List<Integer>> entry : playedMoves.entrySet()){
         			int tempN = entry.getValue().get(0);
         			int tempW = entry.getValue().get(1);
-        			double tempUBC1 = calcUBC1(tempN, tempW);
+        			double tempUBC1 = calcUBC1(tempN, tempW, totalSims);
         			if (ubc1 < tempUBC1){
         				ubc1 = tempUBC1;
         				n = tempN;
         				w = tempW;
-//	        				stateToPlay = entry.getKey();
         				l.clear();
         				l.add(entry.getKey());
         			} else if (ubc1 == tempUBC1){
         				l.add(entry.getKey());
         			}
-        			
-        			stateToPlay = l.get(random.nextInt(l.size()));
         		}
-//        		System.out.println(stateToPlay + " = " + ubc1 + " (n = " + n + ", w = " + w + ")");
+    			stateToPlay = l.get(random.nextInt(l.size()));
         	}
         	int n = 1;
         	int w = (playGame(stateToPlay, stopTime, index)) ? 1 : 0;
@@ -74,36 +69,16 @@ public class UCB1SimulationPlayer extends HeuristicSimulationPlayer {
     			n = playedMoves.get(stateToPlay).get(0) + 1;
     			w = playedMoves.get(stateToPlay).get(1) + w;
     		}
-        	
         	playedMoves.put(stateToPlay, Arrays.asList(n, w));
         	
         }
-//        System.out.println("simulations = " + counter + ", total = " + totalSims);
-        double percentage = 0.0;
-		GameState2P state = null;
-		List<GameState2P> l = new ArrayList<GameState2P>();
-		for (Map.Entry<GameState2P, List<Integer>> entry : playedMoves.entrySet()){
-			int plays = entry.getValue().get(0);
-			int wins = entry.getValue().get(1);
-			double tempPercentage = (wins / (double) totalSims) * 100;
-			System.out.println(entry.getKey() + " " + tempPercentage + "% " + "wins=" + wins + " plays=" + plays);
-			if (percentage < tempPercentage){
-				percentage = tempPercentage;
-				l.clear();
-				l.add(entry.getKey());
-			} else if (percentage == tempPercentage){
-				l.add(entry.getKey());
-			}
-			
-		}
-		state = l.get(random.nextInt(l.size()));
-		System.out.println(state + " = " + percentage + "%\n");
+
+		GameState2P state = getBestState(playedMoves);
 		game.doMove(index, state);
 		
 	}
 	
-	private double calcUBC1(int n, int w){
-		
+	private double calcUBC1(int n, int w, int totalSims){
 		double value = w / (double) n + Math.sqrt( (2 * Math.log(totalSims)) / (double) n );
 //		System.out.println("n = " + n + " w = " + w + " UBC1 score = " + value);
 		return value;
