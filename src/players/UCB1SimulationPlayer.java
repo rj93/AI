@@ -10,7 +10,7 @@ import moves.Move;
 import quoridor.GameState2P;
 import quoridor.Quoridor;
 
-public class UCB1SimulationPlayer extends HeuristicSimulationPlayerRefactored {
+public class UCB1SimulationPlayer extends HeuristicSimulationPlayer {
 	
 	private long availableTime = 5000;
 //	private Map<GameState2P, List<Integer>> playedMoves = new HashMap<GameState2P, List<Integer>>(); 
