@@ -11,12 +11,8 @@ import quoridor.GameDisplay;
 import quoridor.GameState2P;
 import quoridor.Quoridor;
 
-public class HeuristicSimulationPlayer extends QuoridorPlayer {
+public class HeuristicSimulationPlayer extends RandomSimulationPlayer {
 	
-    private long availableTime=5000;
-//    private Random random = new Random();
-   
-
 	public HeuristicSimulationPlayer(GameState2P state, int index, Quoridor game) {
 		super(state, index, game);
 	}
@@ -28,7 +24,7 @@ public class HeuristicSimulationPlayer extends QuoridorPlayer {
         long stopTime = startTime + availableTime;
         
         while  (System.currentTimeMillis() < stopTime){
-    		Move move = getMove(state, index);
+    		Move move = getHeuristicMove(state, index);
     		GameState2P next = move.doMove(state);
     		
     		int n = 1;
@@ -50,7 +46,7 @@ public class HeuristicSimulationPlayer extends QuoridorPlayer {
 		if (s.isGameOver()){
 			return s.isWinner(index);
 		} else if (System.currentTimeMillis() < stopTime){
-			Move move = getMove(s, playerIndex);
+			Move move = getHeuristicMove(s, playerIndex);
         	GameState2P next = move.doMove(s);
         	return runSimulation(next, stopTime, (playerIndex + 1) % 2);
 		}
@@ -59,15 +55,14 @@ public class HeuristicSimulationPlayer extends QuoridorPlayer {
 		
 	}
 	
-	public Move getMove(GameState2P s, int playerIndex){
+	public Move getHeuristicMove(GameState2P s, int playerIndex){
 		double prob = random.nextDouble();
 		Move move = null;
 		if (prob < 0.9){
 			AlphaBetaPlayerFixed abpf = new AlphaBetaPlayerFixed(s, playerIndex, game);
 			move = abpf.chooseMove();
 		} else {
-			List<Move> legalMoves = GameState2P.getLegalMoves(s, playerIndex);
-			move = legalMoves.get(random.nextInt(legalMoves.size()));
+			move = getRandomMove(s, playerIndex);
 		}
 		return move;
 	}

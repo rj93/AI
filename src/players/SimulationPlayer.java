@@ -6,20 +6,25 @@ import java.util.Map;
 import java.util.Random;
 
 import quoridor.GameState2P;
+import quoridor.Quoridor;
 
-public interface SimulationPlayer {
+public abstract class SimulationPlayer extends QuoridorPlayer {
+
+	protected long availableTime = 5000;
 	
-	Random random = null;
-	
-	default GameState2P getBest(Map<GameState2P, List<Integer>> playedMoves, int totalSims){
-		double percentage = 0.0;
-		
+	public SimulationPlayer(GameState2P state, int index, Quoridor game) {
+		super(state, index, game);
+	}
+
+    protected GameState2P getBestState(Map<GameState2P, List<Integer>> playedStates){
+    	
+    	double percentage = 0.0;
 		List<GameState2P> l = new ArrayList<GameState2P>();
-		for (Map.Entry<GameState2P, List<Integer>> entry : playedMoves.entrySet()){
+		for (Map.Entry<GameState2P, List<Integer>> entry : playedStates.entrySet()){
 			int plays = entry.getValue().get(0);
 			int wins = entry.getValue().get(1);
-			double tempPercentage = (wins / (double) totalSims) * 100;
-//			System.out.println(entry.getKey() + " " + tempPercentage + "% " + "wins=" + wins + " plays=" + plays);
+			double tempPercentage = (wins / (double) plays) * 100;
+
 			if (percentage < tempPercentage){
 				percentage = tempPercentage;
 				l.clear();
@@ -30,5 +35,5 @@ public interface SimulationPlayer {
 			
 		}
 		return l.get(random.nextInt(l.size()));
-	}
+    }
 }
