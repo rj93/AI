@@ -23,16 +23,22 @@ public class UCB1SimulationPlayer extends HeuristicSimulationPlayerRefactored {
 	@Override
 	public void doMove() {
 		Map<GameState2P, List<Integer>> playedStates = new HashMap<GameState2P, List<Integer>>();
+		
 		long startTime = System.currentTimeMillis();
         long stopTime = startTime + availableTime;
+    
+        List<Move> legalMoves = GameState2P.getLegalMoves(state, index);
+        List<GameState2P> legalStates = new ArrayList<GameState2P>();
+        for (Move m : legalMoves){ // create list of all legal states
+        	GameState2P s = m.doMove(state);
+        	legalStates.add(s);
+        }
         
-//        List<GameState2P> legalStates = new ArrayList<GameState2P>();
         int totalSims = 0;
         while (System.currentTimeMillis() < stopTime){
         	totalSims++;
-        	List<Move> legalMoves = GameState2P.getLegalMoves(state, index);
         	
-        	GameState2P stateToPlay = getUCB1State(playedStates, legalMoves, totalSims);
+        	GameState2P stateToPlay = getUCB1State(playedStates, legalStates, totalSims);
         	int n = 1;
         	int w = (playGame(stateToPlay, stopTime, index)) ? 1 : 0;
         	if (playedStates.containsKey(stateToPlay)){
@@ -48,35 +54,32 @@ public class UCB1SimulationPlayer extends HeuristicSimulationPlayerRefactored {
 		
 	}
 	
-	private GameState2P getUCB1State(Map<GameState2P, List<Integer>> playedStates, List<Move> legalMoves, int totalSims){
-		boolean unplayedMove = false;
+	private GameState2P getUCB1State(Map<GameState2P, List<Integer>> playedStates, List<GameState2P> legalStates, int totalSims){
+		
+		boolean unplayedStates = false;
     	GameState2P stateToPlay = null;
-    	List<GameState2P> legalStates = new ArrayList<GameState2P>();
-    	for (Move m : legalMoves){
-    		GameState2P s = m.doMove(state);
-    		legalStates.add(s);
+    	for (GameState2P s: legalStates){ // check for any unplayed states
     		if (!playedStates.containsKey(s)){
-    			// play this move
-    			unplayedMove = true;
+    			unplayedStates = true;
     			stateToPlay = s;
     		}
     	}
-    	if (!unplayedMove){
+    	if (!unplayedStates){ // all states have been played atleast once
     		double ubc1 = -1;
     		List<GameState2P> l = new ArrayList<GameState2P>();
     		for (Map.Entry<GameState2P, List<Integer>> entry : playedStates.entrySet()){
     			int n = entry.getValue().get(0);
     			int w = entry.getValue().get(1);
     			double tempUBC1 = calcUBC1(n, w, totalSims);
-    			if (ubc1 < tempUBC1){
+    			if (ubc1 < tempUBC1){ // if this states UCB score is better
     				ubc1 = tempUBC1;
-    				l.clear();
+    				l.clear(); // clear the old list
     				l.add(entry.getKey());
-    			} else if (ubc1 == tempUBC1){
-    				l.add(entry.getKey());
+    			} else if (ubc1 == tempUBC1){ // if this states UCB score is the same as the highest
+    				l.add(entry.getKey()); // add to the list
     			}
     		}
-			stateToPlay = l.get(random.nextInt(l.size()));
+			stateToPlay = l.get(random.nextInt(l.size())); // choose randomly from list of states with equally highest UCB scores
     	}
 		return stateToPlay;
 	}
