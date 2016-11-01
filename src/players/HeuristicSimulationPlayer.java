@@ -32,7 +32,7 @@ public class HeuristicSimulationPlayer extends QuoridorPlayer {
     		GameState2P next = move.doMove(state);
     		
     		int n = 1;
-        	int w = (playGame(next, stopTime, (index+1)%2)) ? 1 : 0;
+        	int w = (runSimulation(next, stopTime, (index+1)%2)) ? 1 : 0;
         	if (playedMoves.containsKey(next)){
     			n = playedMoves.get(next).get(0) + 1;
     			w = playedMoves.get(next).get(1) + w;
@@ -46,13 +46,13 @@ public class HeuristicSimulationPlayer extends QuoridorPlayer {
 		
 	}
 	
-	public boolean playGame(GameState2P s, long stopTime, int playerIndex){
+	public boolean runSimulation(GameState2P s, long stopTime, int playerIndex){
 		if (s.isGameOver()){
 			return s.isWinner(index);
 		} else if (System.currentTimeMillis() < stopTime){
 			Move move = getMove(s, playerIndex);
         	GameState2P next = move.doMove(s);
-        	return playGame(next, stopTime, (playerIndex + 1) % 2);
+        	return runSimulation(next, stopTime, (playerIndex + 1) % 2);
 		}
 		
 		return false;

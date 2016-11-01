@@ -40,7 +40,7 @@ public class UCB1SimulationPlayer extends HeuristicSimulationPlayer {
         	
         	GameState2P stateToPlay = getUCB1State(playedStates, legalStates, totalSims);
         	int n = 1;
-        	int w = (playGame(stateToPlay, stopTime, index)) ? 1 : 0;
+        	int w = (runSimulation(stateToPlay, stopTime, index)) ? 1 : 0;
         	if (playedStates.containsKey(stateToPlay)){
     			n = playedStates.get(stateToPlay).get(0) + 1;
     			w = playedStates.get(stateToPlay).get(1) + w;
