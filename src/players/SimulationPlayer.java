@@ -3,7 +3,6 @@ package players;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import quoridor.GameState2P;
 import quoridor.Quoridor;
@@ -14,6 +13,11 @@ public abstract class SimulationPlayer extends QuoridorPlayer {
 	
 	public SimulationPlayer(GameState2P state, int index, Quoridor game) {
 		super(state, index, game);
+	}
+	
+	public SimulationPlayer(GameState2P state, int index, Quoridor game, long availableTime) {
+		super(state, index, game);
+		this.availableTime = availableTime;
 	}
 
     protected GameState2P getBestState(Map<GameState2P, List<Integer>> playedStates){

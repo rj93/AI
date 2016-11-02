@@ -15,6 +15,10 @@ public class RandomSimulationPlayer extends SimulationPlayer {
     public RandomSimulationPlayer(GameState2P state, int index, Quoridor game) {
         super(state, index, game);
     }
+    
+    public RandomSimulationPlayer(GameState2P state, int index, Quoridor game, long availableTime) {
+		super(state, index, game, availableTime);
+	}
 
 	@Override
 	public void doMove() {

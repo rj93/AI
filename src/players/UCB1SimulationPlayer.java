@@ -15,6 +15,10 @@ public class UCB1SimulationPlayer extends HeuristicSimulationPlayer {
 	public UCB1SimulationPlayer(GameState2P state, int index, Quoridor game) {
 		super(state, index, game);
 	}
+	
+	public UCB1SimulationPlayer(GameState2P state, int index, Quoridor game, long availableTime) {
+		super(state, index, game, availableTime);
+	}
 
 	@Override
 	public void doMove() {
@@ -67,17 +71,17 @@ public class UCB1SimulationPlayer extends HeuristicSimulationPlayer {
     		}
     	}
     	if (!unplayedStates){ // all states have been played atleast once
-    		double ubc1 = -1;
+    		double ucb1 = -1;
     		List<GameState2P> l = new ArrayList<GameState2P>();
     		for (Map.Entry<GameState2P, List<Integer>> entry : playedStates.entrySet()){
     			int n = entry.getValue().get(0);
     			int w = entry.getValue().get(1);
-    			double tempUBC1 = calcUBC1(n, w, totalSims);
-    			if (ubc1 < tempUBC1){ // if this states UCB score is better
-    				ubc1 = tempUBC1;
+    			double tempUBC1 = calcUCB1(n, w, totalSims);
+    			if (ucb1 < tempUBC1){ // if this states UCB score is better
+    				ucb1 = tempUBC1;
     				l.clear(); // clear the old list
     				l.add(entry.getKey());
-    			} else if (ubc1 == tempUBC1){ // if this states UCB score is the same as the highest
+    			} else if (ucb1 == tempUBC1){ // if this states UCB score is the same as the highest
     				l.add(entry.getKey()); // add to the list
     			}
     		}
@@ -86,9 +90,9 @@ public class UCB1SimulationPlayer extends HeuristicSimulationPlayer {
 		return stateToPlay;
 	}
 	
-	private double calcUBC1(int n, int w, int totalSims){
+	protected double calcUCB1(int n, int w, int totalSims){
 		double value = w / (double) n + Math.sqrt( (2 * Math.log(totalSims)) / (double) n );
-//		System.out.println("n = " + n + " w = " + w + " UBC1 score = " + value);
+//		System.out.println("n = " + n + " w = " + w + " sims =  " + totalSims + " UBC1 score = " + value);
 		return value;
 	}
 	

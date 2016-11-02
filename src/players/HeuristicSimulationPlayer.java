@@ -17,6 +17,10 @@ public class HeuristicSimulationPlayer extends RandomSimulationPlayer {
 		super(state, index, game);
 	}
 	
+	public HeuristicSimulationPlayer(GameState2P state, int index, Quoridor game, long availableTime) {
+		super(state, index, game, availableTime);
+	}
+	
 	public void doMove(){
 		Map<GameState2P, List<Integer>> playedMoves = new HashMap<GameState2P, List<Integer>>();
 		
