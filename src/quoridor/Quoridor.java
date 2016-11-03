@@ -80,9 +80,9 @@ public class Quoridor {
     	return state.isWinner(0) ? 0 : 1;
     }
     
-    public Class<? extends QuoridorPlayer> getPlayerClass(int index){
-    	return players[index].getClass();
-    }
+//    public Class<? extends QuoridorPlayer> getPlayerClass(int index){
+//    	return players[index].getClass();
+//    }
     
     public void close(){
     	display.dispose();
@@ -119,24 +119,57 @@ public class Quoridor {
             return;
         }
     }
+    
+    public static String getPlayerClass(int playerType){
+    	String s = "";
+    	switch (playerType){
+    	case ALPHA_BETA_FIXED:
+    		s = "AlphaBetaPlayerFixed";
+    		break;
+    	case ALPHA_BETA_ITERATIVE:
+    		s = "AlphaBetaPlayerIterative";
+    		break;
+    	case RANDOM:
+    		s = "RandomSimulationPlayer";
+    		break;
+    	case HEURISTIC:
+    		s = "HeuristicSimulationPlayer";
+    		break;
+    	case UCB1:
+    		s = "UCB1SimulationPlayer";
+    		break;
+    	case RECURSIVE_UCB1:
+    		s = "RecursiveUCB1SimulationPlayer";
+    		break;
+    	}
+    	return s;
+    }
 
     public static void main(String[] args) {
-    	int[] wins = {0, 0};
-    	for (int i = 0; i < 10; i++){
-        	Quoridor quoridor = new Quoridor(Quoridor.UCB1, Quoridor.ALPHA_BETA_ITERATIVE);
-	    	while (!quoridor.isOver()){
-	    		try {
-					Thread.sleep(250);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-	    	}
-	    	int winner = quoridor.getWinner();
-	    	System.out.println(String.format("game %d won by player %d (%s)", i, winner, quoridor.getPlayerClass(winner).getName()));
-	    	wins[winner]++;
-	    	quoridor.close();
+    		
+    	for (int p1 = 0; p1 < 5; p1++){
+    		for (int p2 = 0; p2 < 5; p2++){
+    			if (p1 == p2) continue;
+    			System.out.println("Match - Player 1 = " + Quoridor.getPlayerClass(p1) + " Player 2 = " + Quoridor.getPlayerClass(p2));
+		    	int[] wins = {0, 0};
+		    	for (int i = 0; i < 10; i++){
+		        	Quoridor quoridor = new Quoridor(p1, p2);
+			    	while (!quoridor.isOver()){
+			    		try {
+							Thread.sleep(250);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+			    	}
+			    	int winner = quoridor.getWinner();
+			    	System.out.println(String.format("game %d won by player %d (%s)", i+1, winner+1, Quoridor.getPlayerClass(winner)));
+			    	wins[winner]++;
+			    	quoridor.close();
+		    	}
+		    	System.out.println("Player 1 (" + Quoridor.getPlayerClass(p1) + ") wins = " + wins[0]);
+		    	System.out.println("Player 2 (" + Quoridor.getPlayerClass(p2) + ") wins = " + wins[1]);
+//		    	System.out.println("Player 1 wins = " + wins[1]);
+    		}
     	}
-    	System.out.println("Player 0 wins = " + wins[0]);
-    	System.out.println("Player 1 wins = " + wins[1]);
     }
 }

@@ -65,7 +65,7 @@ public class RecursiveUCB1SimulationPlayer extends UCB1SimulationPlayer {
 			}
 			
 		}
-//		return l.get(random.nextInt(l.size()));
+		
 		System.out.println(totalSims + " " + parent.getPlays() + " " + childTotal + " " + parent.getChildren().size() + " " + GameState2P.getLegalMoves(state, index).size());
 		System.out.println("percentage  = " + percentage);
 		GameState2P state = l.get(random.nextInt(l.size())).getState();
