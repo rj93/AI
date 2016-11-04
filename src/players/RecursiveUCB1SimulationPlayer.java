@@ -86,6 +86,7 @@ public class RecursiveUCB1SimulationPlayer extends UCB1SimulationPlayer {
 				Node n = getBestChildNode(parent);
 				parent.addChild(n);
 				boolean win = runSimulation(n, stopTime, (playerIndex+1)%2, depth - 1);
+//				if (parent.getIndex() != index) win = !win;
 				if (win) n.incWins();
 				return win;
 			}

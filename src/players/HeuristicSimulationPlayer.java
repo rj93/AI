@@ -4,14 +4,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import moves.Move;
-import quoridor.GameDisplay;
 import quoridor.GameState2P;
 import quoridor.Quoridor;
 
 public class HeuristicSimulationPlayer extends RandomSimulationPlayer {
+	
+	protected int maxDepth = 2;
 	
 	public HeuristicSimulationPlayer(GameState2P state, int index, Quoridor game) {
 		super(state, index, game);
@@ -19,6 +19,10 @@ public class HeuristicSimulationPlayer extends RandomSimulationPlayer {
 	
 	public HeuristicSimulationPlayer(GameState2P state, int index, Quoridor game, long availableTime) {
 		super(state, index, game, availableTime);
+	}
+	
+	public void setMaxDepth(int maxDepth){
+		this.maxDepth = maxDepth;
 	}
 	
 	public void doMove(){
@@ -64,6 +68,7 @@ public class HeuristicSimulationPlayer extends RandomSimulationPlayer {
 		Move move = null;
 		if (prob < 0.9){
 			AlphaBetaPlayerFixed abpf = new AlphaBetaPlayerFixed(s, playerIndex, game);
+			abpf.setMaxDepth(maxDepth);
 			move = abpf.chooseMove();
 		} else {
 			move = getRandomMove(s, playerIndex);

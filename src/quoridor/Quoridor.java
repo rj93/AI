@@ -1,5 +1,11 @@
 package quoridor;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import players.*;
 
 /**
@@ -146,9 +152,19 @@ public class Quoridor {
     }
 
     public static void main(String[] args) {
+    	
+    	List<Integer> players = new ArrayList<Integer>(
+   			Arrays.asList(
+   				Quoridor.ALPHA_BETA_FIXED, 
+    			Quoridor.ALPHA_BETA_ITERATIVE, 
+   				Quoridor.RANDOM,
+    			Quoridor.HEURISTIC, 
+    			Quoridor.UCB1
+    		)
+    	);
     		
-    	for (int p1 = 0; p1 < 5; p1++){
-    		for (int p2 = 0; p2 < 5; p2++){
+    	for (int p1 : players){
+    		for (int p2 : players){
     			if (p1 == p2) continue;
     			System.out.println("Match - Player 1 = " + Quoridor.getPlayerClass(p1) + " Player 2 = " + Quoridor.getPlayerClass(p2));
 		    	int[] wins = {0, 0};
@@ -162,7 +178,8 @@ public class Quoridor {
 						}
 			    	}
 			    	int winner = quoridor.getWinner();
-			    	System.out.println(String.format("game %d won by player %d (%s)", i+1, winner+1, Quoridor.getPlayerClass(winner)));
+			    	String winnerStr = Quoridor.getPlayerClass((winner == p1) ? p1 : p2);
+//			    	System.out.println(String.format("game %d won by player %d (%s)", i+1, winner+1, winnerStr));
 			    	wins[winner]++;
 			    	quoridor.close();
 		    	}
@@ -171,5 +188,6 @@ public class Quoridor {
 //		    	System.out.println("Player 1 wins = " + wins[1]);
     		}
     	}
+    	
     }
 }
