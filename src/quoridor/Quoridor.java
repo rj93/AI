@@ -2,9 +2,7 @@ package quoridor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import players.*;
 
@@ -86,10 +84,6 @@ public class Quoridor {
     	return state.isWinner(0) ? 0 : 1;
     }
     
-//    public Class<? extends QuoridorPlayer> getPlayerClass(int index){
-//    	return players[index].getClass();
-//    }
-    
     public void close(){
     	display.dispose();
     }
@@ -159,7 +153,8 @@ public class Quoridor {
     			Quoridor.ALPHA_BETA_ITERATIVE, 
    				Quoridor.RANDOM,
     			Quoridor.HEURISTIC, 
-    			Quoridor.UCB1
+    			Quoridor.UCB1,
+    			Quoridor.RECURSIVE_UCB1
     		)
     	);
     		
@@ -179,13 +174,12 @@ public class Quoridor {
 			    	}
 			    	int winner = quoridor.getWinner();
 			    	String winnerStr = Quoridor.getPlayerClass((winner == p1) ? p1 : p2);
-//			    	System.out.println(String.format("game %d won by player %d (%s)", i+1, winner+1, winnerStr));
+			    	System.out.println(String.format("game %d won by player %d (%s)", i+1, winner+1, winnerStr));
 			    	wins[winner]++;
 			    	quoridor.close();
 		    	}
-		    	System.out.println("Player 1 (" + Quoridor.getPlayerClass(p1) + ") wins = " + wins[0]);
-		    	System.out.println("Player 2 (" + Quoridor.getPlayerClass(p2) + ") wins = " + wins[1]);
-//		    	System.out.println("Player 1 wins = " + wins[1]);
+//		    	System.out.println("Player 1 (" + Quoridor.getPlayerClass(p1) + ") wins = " + wins[0]);
+//		    	System.out.println("Player 2 (" + Quoridor.getPlayerClass(p2) + ") wins = " + wins[1]);
     		}
     	}
     	

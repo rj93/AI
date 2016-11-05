@@ -1,10 +1,7 @@
 package players;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import node.Node;
@@ -33,29 +30,27 @@ public class RecursiveUCB1SimulationPlayer extends UCB1SimulationPlayer {
 		this.depth = depth;
 	}
 	
+	public void setDepth(int depth){
+		this.depth = depth;
+	}
+	
 	@Override
 	public void doMove(){
 		
 		long startTime = System.currentTimeMillis();
         long stopTime = startTime + availableTime;
         
-		int totalSims = 0;
-		Node parent = new Node((index+1)%2, state);
+		Node root = new Node((index+1)%2, state);
 		while (System.currentTimeMillis() < stopTime){
-			totalSims++;
-        	runSimulation(parent, stopTime, index, depth);
+			runSimulation(root, stopTime, index, depth);
 		}
 		double percentage = 0.0;
 		List<Node> l = new ArrayList<Node>();
-		int childTotal = 0;
-		for (Node child : parent.getChildren()){
-			childTotal += child.getPlays();
+		for (Node child : root.getChildren()){
 			int plays = child.getPlays();
 			int wins = child.getWins();
+			
 			double tempPercentage = (wins / (double) plays) * 100;
-			if (parent.getChildren().size() <= 3)
-				System.out.println(tempPercentage);
-
 			if (percentage < tempPercentage){
 				percentage = tempPercentage;
 				l.clear();
@@ -63,11 +58,8 @@ public class RecursiveUCB1SimulationPlayer extends UCB1SimulationPlayer {
 			} else if (percentage == tempPercentage){
 				l.add(child);
 			}
-			
 		}
 		
-		System.out.println(totalSims + " " + parent.getPlays() + " " + childTotal + " " + parent.getChildren().size() + " " + GameState2P.getLegalMoves(state, index).size());
-		System.out.println("percentage  = " + percentage);
 		GameState2P state = l.get(random.nextInt(l.size())).getState();
 		game.doMove(index, state);
 		
@@ -83,35 +75,33 @@ public class RecursiveUCB1SimulationPlayer extends UCB1SimulationPlayer {
 			if (depth == 0){
 				return runSimulation(parent.getState(), stopTime, playerIndex);
 			} else {
-				Node n = getBestChildNode(parent);
+				Node n = getUCBChildNode(parent);
 				parent.addChild(n);
 				boolean win = runSimulation(n, stopTime, (playerIndex+1)%2, depth - 1);
-//				if (parent.getIndex() != index) win = !win;
-				if (win) n.incWins();
+				if ((n.getIndex() != index && !win) || win) n.incWins(); // if this node is the opponent, the win boolean is for the player, so need to increment the opponents wins
 				return win;
 			}
 		}
 	}
 	
-	private Node getBestChildNode(Node node){
+	private Node getUCBChildNode(Node node){
 
-		List<Node> l = new ArrayList<Node>();
+		List<Node> nodeList = new ArrayList<Node>();
 		
 		Set<Node> children = node.getChildren();
 		List<GameState2P> legalStates = getLegalGameStates(node.getState(), (node.getIndex() + 1)%2);
 		if (children.size() == 0){
 			GameState2P stateToPlay = legalStates.get(random.nextInt(legalStates.size()));
 			Node n = new Node((node.getIndex() + 1)%2, stateToPlay);
-			l.add(n);
+			nodeList.add(n);
 		} else if (children.size() != legalStates.size()){
 			GameState2P stateToPlay = legalStates.get(random.nextInt(legalStates.size()));
 			Node n = new Node((node.getIndex() + 1)%2, stateToPlay);
 			while (children.contains(n)){
 				n = new Node((node.getIndex() + 1)%2, stateToPlay);
 			}
-			l.add(n);
+			nodeList.add(n);
 		} else {
-//			System.out.println("children = " + children.size());
 			double ucb1 = -1;
 			for (Node child : children){
 				int n = child.getPlays();
@@ -119,14 +109,14 @@ public class RecursiveUCB1SimulationPlayer extends UCB1SimulationPlayer {
     			double tempUBC1 = calcUCB1(n, w, node.getPlays());
     			if (ucb1 < tempUBC1){ // if this states UCB score is better
     				ucb1 = tempUBC1;
-    				l.clear(); // clear the old list
-    				l.add(child);
+    				nodeList.clear(); // clear the old list
+    				nodeList.add(child);
     			} else if (ucb1 == tempUBC1){ // if this states UCB score is the same as the highest
-    				l.add(child); // add to the list
+    				nodeList.add(child); // add to the list
     			}
 			}
 		}
-		return l.get(random.nextInt(l.size()));
+		return nodeList.get(random.nextInt(nodeList.size()));
 	}
 
 }
