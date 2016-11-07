@@ -173,9 +173,9 @@ public class Quoridor {
 						}
 			    	}
 			    	int winner = quoridor.getWinner();
-			    	String winnerStr = Quoridor.getPlayerClass((winner == 0) ? p1 : p2);
-//			    	System.out.println(String.format("game %d won by player %d (%s)", i+1, winner+1, winnerStr));
 			    	wins[winner]++;
+//			    	String winnerStr = Quoridor.getPlayerClass((winner == 0) ? p1 : p2);
+//			    	System.out.println(String.format("game %d won by player %d (%s)", i+1, winner+1, winnerStr));
 			    	quoridor.close();
 		    	}
 		    	System.out.println("Player 1 (" + Quoridor.getPlayerClass(p1) + ") wins = " + wins[0]);

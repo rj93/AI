@@ -22,10 +22,15 @@ public abstract class SimulationPlayer extends QuoridorPlayer {
 		this.availableTime = availableTime;
 	}
 
+	/**
+	 * Calculates the win percentages of all the playedStates, and returns the one with the highest.
+	 * @param playedStates
+	 * @return the state with the highest win percentage
+	 */
     protected GameState2P getBestState(Map<GameState2P, List<Integer>> playedStates){
     	
     	double percentage = 0.0;
-		List<GameState2P> l = new ArrayList<GameState2P>();
+		List<GameState2P> states = new ArrayList<GameState2P>();
 		for (Map.Entry<GameState2P, List<Integer>> entry : playedStates.entrySet()){
 			int plays = entry.getValue().get(0);
 			int wins = entry.getValue().get(1);
@@ -33,13 +38,13 @@ public abstract class SimulationPlayer extends QuoridorPlayer {
 
 			if (percentage < tempPercentage){
 				percentage = tempPercentage;
-				l.clear();
-				l.add(entry.getKey());
+				states.clear();
+				states.add(entry.getKey());
 			} else if (percentage == tempPercentage){
-				l.add(entry.getKey());
+				states.add(entry.getKey());
 			}
 			
 		}
-		return l.get(random.nextInt(l.size()));
+		return states.get(random.nextInt(states.size()));
     }
 }

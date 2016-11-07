@@ -1,7 +1,5 @@
 package players;
 
-import java.util.Random;
-
 import quoridor.GameDisplay;
 import quoridor.GameState2P;
 import quoridor.Quoridor;

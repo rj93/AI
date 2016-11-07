@@ -75,7 +75,6 @@ public class RecursiveUCB1SimulationPlayer extends UCB1SimulationPlayer {
 				return runSimulation(parent.getState(), stopTime, playerIndex);
 			} else {
 				Node n = getUCBChildNode(parent);
-				parent.addChild(n);
 				boolean win = runSimulation(n, stopTime, (playerIndex+1)%2, depth - 1);
 				if ((n.getIndex() != index && !win) || win) n.incWins(); // if this node is the opponent, the win boolean is for the player, so need to increment the opponents wins
 				return win;
@@ -83,26 +82,27 @@ public class RecursiveUCB1SimulationPlayer extends UCB1SimulationPlayer {
 		}
 	}
 	
-	private Node getUCBChildNode(Node node){
+	private Node getUCBChildNode(Node parent){
 
 		List<Node> nodeList = new ArrayList<Node>();
 		
-		Set<Node> children = node.getChildren();
-		List<GameState2P> legalStates = getLegalGameStates(node.getState(), (node.getIndex() + 1)%2);
+		Set<Node> children = parent.getChildren();
+		List<GameState2P> legalStates = getLegalGameStates(parent.getState(), (parent.getIndex() + 1)%2);
 		if (children.size() != legalStates.size()){
 			GameState2P stateToPlay = legalStates.get(random.nextInt(legalStates.size()));
-			Node n = new Node((node.getIndex() + 1)%2, stateToPlay);
+			Node n = new Node((parent.getIndex() + 1)%2, stateToPlay);
 			while (children.contains(n)){ // already simulated this move
 				stateToPlay = legalStates.get(random.nextInt(legalStates.size()));
-				n = new Node((node.getIndex() + 1)%2, stateToPlay);
+				n = new Node((parent.getIndex() + 1)%2, stateToPlay);
 			}
+			parent.addChild(n);
 			nodeList.add(n);
 		} else {
 			double ucb1 = -1;
 			for (Node child : children){
 				int n = child.getPlays();
     			int w = child.getWins();
-    			double tempUBC1 = calcUCB1(n, w, node.getPlays());
+    			double tempUBC1 = calcUCB1(n, w, parent.getPlays());
     			if (ucb1 < tempUBC1){ // if this states UCB score is better
     				ucb1 = tempUBC1;
     				nodeList.clear(); // clear the old list

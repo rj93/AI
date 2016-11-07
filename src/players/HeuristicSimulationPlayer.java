@@ -58,9 +58,7 @@ public class HeuristicSimulationPlayer extends RandomSimulationPlayer {
         	GameState2P next = move.doMove(s);
         	return runSimulation(next, stopTime, (playerIndex + 1) % 2);
 		}
-		
 		return false;
-		
 	}
 	
 	public Move getHeuristicMove(GameState2P s, int playerIndex){
