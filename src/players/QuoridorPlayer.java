@@ -16,7 +16,6 @@ public abstract class QuoridorPlayer {
     protected GameDisplay display;    
     protected Quoridor game;
     int index;
-    protected Random random = new Random();
         
     public QuoridorPlayer(GameState2P state, int index, Quoridor game){
         this.state=state;                             
