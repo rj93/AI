@@ -59,7 +59,6 @@ public class RecursiveUCB1SimulationPlayer extends UCB1SimulationPlayer {
 				l.add(child);
 			}
 		}
-		
 		GameState2P state = l.get(random.nextInt(l.size())).getState();
 		game.doMove(index, state);
 		
@@ -90,11 +89,7 @@ public class RecursiveUCB1SimulationPlayer extends UCB1SimulationPlayer {
 		
 		Set<Node> children = node.getChildren();
 		List<GameState2P> legalStates = getLegalGameStates(node.getState(), (node.getIndex() + 1)%2);
-		if (children.size() == 0){
-			GameState2P stateToPlay = legalStates.get(random.nextInt(legalStates.size()));
-			Node n = new Node((node.getIndex() + 1)%2, stateToPlay);
-			nodeList.add(n);
-		} else if (children.size() != legalStates.size()){
+		if (children.size() != legalStates.size()){
 			GameState2P stateToPlay = legalStates.get(random.nextInt(legalStates.size()));
 			Node n = new Node((node.getIndex() + 1)%2, stateToPlay);
 			while (children.contains(n)){ // already simulated this move
